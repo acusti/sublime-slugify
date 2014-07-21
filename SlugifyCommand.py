@@ -35,8 +35,10 @@ class SlugifyReplaceCommand(sublime_plugin.TextCommand):
     def run(self, edit, separator):
         regions = self.view.sel()
 
-        # Only run if there is a selection.
-        if len(regions) > 1 or not regions[0].empty():
-            for region in regions:
-                text = self.view.substr(region)
-                self.view.replace(edit, region, slugify(text, separator))
+        for region in regions:
+            # If there is no selection, use the clipboard contents and insert the results.
+            if region.empty():
+                # slugify(self.view.get_clipboard(), separator)
+                self.view.insert(edit, region.begin(), slugify(sublime.get_clipboard(), separator))
+            else:
+                self.view.replace(edit, region, slugify(self.view.substr(region), separator))
